@@ -17,7 +17,7 @@ let IntervalTime
 let orderArray = []
 function setTransactions(id, mode){
     if(mode==='transaction'){
-        let urlTransactions = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-04/orders/${id}/transactions.json`;
+        let urlTransactions = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-07/orders/${id}/transactions.json`;
         fetch(urlTransactions,{method:'GET', headers:headers})
         .then(response => response.json())
         .then(data => {
@@ -47,7 +47,7 @@ function setTransactions(id, mode){
     }
     /*Ordenes*/
     if(mode==='orders'){
-        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-04/orders/${id}.json`;
+        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-07/orders/${id}.json`;
         fetch(urlOrders,{method:'GET', headers:headers})
         .then(response => response.json())
         .then(data => {
@@ -91,7 +91,7 @@ function setTransactions(id, mode){
     }
     /*Ordenes por Fecha*/
     if(mode==='getOrdersByDate'){
-        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-04/orders.json?created_at_min=2020-05-10&created_at_max=2020-05-15&limit=250`;
+        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-07/orders.json?created_at_min=2020-07-19&created_at_max=2020-07-22&limit=250`;
         fetch(urlOrders,{method:'GET', headers:headers})
         .then(response => response.json())
         .then(data => {
@@ -115,6 +115,6 @@ function setTransactions(id, mode){
     }
 }
 IntervalTime =  setInterval(function(){
-    setTransactions(IDS[0].substring(0,13), 'transaction')
+    setTransactions(IDS[0].substring(0,13), 'getOrdersByDate')
     //setTransactions(id);
     }, 4600);
