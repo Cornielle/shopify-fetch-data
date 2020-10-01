@@ -1,11 +1,40 @@
 let base64 = require('base-64');
+const { Console } = require('console');
 require('dotenv').config();
 let fs = require('fs');
 const fetch = require('node-fetch');
+const shopify = require('./shopify')
 global.Headers = fetch.Headers;
 let headers = new Headers();
-headers.set('Authorization', 'Basic ' + base64.encode( process.env.USER_NAME+ ":" + process.env.PASSWORD));
+// headers.set(
+//     'Authorization', 'Basic ' + base64.encode( process.env.USER_NAME+ ":" + process.env.PASSWORD),
+//     'Content-Type','application/json',
+//     'Accept', 'application/json'
+//     );
 
+
+
+query = `{
+    orders(
+        first:250,
+        query:"created_at:>2020-03-01"
+    ) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            id,
+            createdAt
+            customer{
+                firstName
+                lastName
+            }
+          }
+        }
+      }
+  }`
 
 let orders = require('./orders502.json');
 let order
@@ -240,30 +269,17 @@ function setTransactions(id, mode){
     }
     /*Ordenes por Fecha*/
     if(mode==='getOrdersByDate'){
-        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-04/orders.json?status=any&created_at_min=2020-03-01&created_at_max=2020-04-09&limit=250`;
-        fetch(urlOrders,{method:'GET', headers:headers})
-        .then(response => response.json())
-        .then(data => {
-            data.orders.map(order=>{
-                console.log(
-                order.id,
-                order.created_at
-                ,'checking all '
-                )
-                orderArray.push(`'${order.id} ${order.created_at}'${'\n'}`)
-            })
-            // IDS.shift()
-            fs.writeFile("./ids.json", orderArray, function(err) {
-                if(err){
-                    console.log(err);
-                }
-            });
-            
-            console.log(orderArray.length,'transacciones')
+        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-10/graphql.json`;
+        shopify.autoFetch(urlOrders,{
+            method:'POST', 
+            headers: {
+                'Content-Type': 'application/graphql',
+                'X-Shopify-Access-Token':process.env.TOKEN
+            }
         })
     }
 }
-IntervalTime =  setInterval(function(){
+// IntervalTime =  setInterval(function(){
     setTransactions('', 'getOrdersByDate')
     // setTransactions(IDS[0].substring(0,13), 'transaction')
-    }, 2600);
+    // }, 2600);
