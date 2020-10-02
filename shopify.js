@@ -1,10 +1,5 @@
-let base64 = require('base-64');
-require('dotenv').config();
-let fs = require('fs');
 const fetch = require('node-fetch');
-/*Regenerate the request*/
-let cursor = '';
-let availableItems = ''
+let id =''
 let queryCreateBulk = `mutation {
     bulkOperationRunQuery(
       query:"""
@@ -20,18 +15,17 @@ let queryCreateBulk = `mutation {
                 firstName
                 lastName
               }
-              lineItems{
-                edges{
-                  node{
-                    sku,
-                    quantity
-                  }
-                }
-              }
               transactions{
                 status
                 gateway
-                authorizationCode
+                authorizationCode,
+                formattedGateway
+                amountSet{ 
+                  presentmentMoney{
+                    amount
+                    currencyCode
+                  }
+                }
               }
             }
           }
@@ -50,7 +44,7 @@ let queryCreateBulk = `mutation {
   }
 }`
 let queryDownloadBulk = `{
-  node(id: "gid://shopify/BulkOperation/180570161218") {
+  node(id: "gid://shopify/BulkOperation/46515847332") {
     ... on BulkOperation {
       id
       status
@@ -65,12 +59,12 @@ let queryDownloadBulk = `{
   }
 }`
 
-function autoFetch(url, request, mode ){
-      request.body = queryDownloadBulk
+function fetchPL( url, request ){
+      request.body = queryCreateBulk
       fetch(url, request)
       .then(res => res.json())
       .then(result => {
-        if(result.data.bulkOperationRunQuery!== undefined){
+        if(result.data.bulkOperationRunQuery!== undefined){ 
           console.log(result.data.bulkOperationRunQuery)
           return
         }
@@ -79,4 +73,20 @@ function autoFetch(url, request, mode ){
         console.log(err)
       })
 }
-exports.autoFetch = autoFetch
+
+function fetchSL( url, request ){
+  request.body = queryDownloadBulk
+  fetch(url, request)
+  .then(res => res.json())
+  .then(result => {
+    if(result.data.bulkOperationRunQuery!== undefined){
+      console.log(result.data.bulkOperationRunQuery)
+      id = result.data.bulkOperationRunQuery.id
+      return
+    }
+    console.log(result)
+  }).catch(err=>{
+    console.log(err)
+  })
+}
+exports.bulkData= {fetchPL, fetchSL}

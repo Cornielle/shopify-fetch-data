@@ -1,13 +1,25 @@
+require('dotenv').config();
+const shopify = {fetchPL, fetchSL} =  require('./shopify')
+const execute = (mode) =>{
+    if(mode ==='PL'){
+        let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-10/graphql.json`;
+        shopify.bulkData.fetchPL(urlOrders,{
+            method:'POST', 
+            headers: {
+                'Content-Type': 'application/graphql',
+                'X-Shopify-Access-Token':process.env.TOKENPL
+            }
+        })
+    } else {
+        let urlOrders = `https://superlama.myshopify.com/admin/api/2020-10/graphql.json`;
+        shopify.bulkData.fetchSL(urlOrders,{
+            method:'POST', 
+            headers: {
+                'Content-Type': 'application/graphql',
+                'X-Shopify-Access-Token':process.env.TOKENSL
+            }
+        })
+    }
+}
 
-// const shopify = require('./shopify')
-//         let urlOrders = `https://plaza-lama-virtual.myshopify.com/admin/api/2020-10/graphql.json`;
-//         shopify.autoFetch(urlOrders,{
-//             method:'POST', 
-//             headers: {
-//                 'Content-Type': 'application/graphql',
-//                 'X-Shopify-Access-Token':process.env.TOKEN
-//             }
-//         })
-const jsonResult  = require('./ordenes_marzo_01_octubre_01.json');
-console.log(JSON.stringify(jsonResult), 'checking')
-console.log('here')
+execute('SL');
